@@ -4,3 +4,20 @@ target/
 *.iml
 .vscode/
 
+# Local outputs retained from the former Android/Gradle project
+.gradle/
+.kotlin/
+**/build/
+out/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Generated classes, coverage data, and local OS/Word temporary files
+*.class
+*.exec
+hs_err_pid*.log
+.DS_Store
+~$*
+*.wbk

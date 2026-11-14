@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: tw.edu.testing.CourseRegistrationLogicTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in tw.edu.testing.CourseRegistrationLogicTest
