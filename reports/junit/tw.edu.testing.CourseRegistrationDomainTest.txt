@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: tw.edu.testing.CourseRegistrationDomainTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in tw.edu.testing.CourseRegistrationDomainTest

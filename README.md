@@ -49,7 +49,7 @@ boolean result = validator.isValid("abc0");            // result 為 true
 |---|---|---|
 | JDK 21 | Java 開發工具，包含編譯器與執行環境 | 編譯並執行 Java 程式 |
 | Maven 3.9 | 管理套件與建置流程 | 讀取 `pom.xml`，下載套件、編譯及執行測試 |
-| JUnit 5 | 檢查實際結果是否符合預期 | 執行九個測試案例 |
+| JUnit 5 | 檢查實際結果是否符合預期 | 執行 23 個測試案例 |
 | Surefire | Maven 的測試執行外掛 | 執行 JUnit 並產生結果報告 |
 | JaCoCo | 觀察哪些程式碼有被測到 | 產生行覆蓋率與分支覆蓋率報告 |
 | PIT | 刻意改動程式，看測試能否發現 | 進行變異測試（Mutation Testing） |
@@ -89,11 +89,11 @@ mvn test
 第一次需要連線下載套件，可能較久。完成後確認輸出包含：
 
 ```text
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 23, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
-這表示九個案例全部執行，沒有失敗、錯誤或跳過。Maven 會自動編譯，不需要手動執行 `javac`。
+這表示原有 9 個密碼案例與新增 14 個課程案例全部執行，沒有失敗、錯誤或跳過。Maven 會自動編譯，不需要手動執行 `javac`。
 
 ### 4. 產生全部工具的報告
 
@@ -300,3 +300,36 @@ mvn "-Dmaven.repo.local=.m2" "-Dtest=PasswordValidatorTest#rejectsNull" test
 **跑完 mvn test，HTML 報告為什麼沒更新？**
 
 `test` 會更新 JUnit 結果，但不會產生 JaCoCo HTML 或執行 PIT。請選用「常用指令」中的報告指令，並查看 `target` 下的新結果。
+
+
+## 1114 作業：課程報名與費用計算
+
+新增 `CourseRegistrationPolicy`，沿用既有 Java 21、JUnit、JaCoCo 與 PIT 設定；`pom.xml` 沒有修改。PasswordValidator 與原有九個測試保持遠端版本，包含方法名稱、輸入、預期結果及測試本文。AAA 命名與結構僅套用至新增的課程測試。
+
+- `canEnroll`：以 while 迴圈檢查先修課程，再以 if 判斷三子句報名條件，八個組合案例。
+- `calculateFee`：以 for 迴圈逐位累加費用（團報第 2 位起每人折抵 20），人數及課程類別六個組合案例。
+- 完整套件共 23 個案例；目前 `reports/junit` 與 `reports/jacoco` 已包含新增課程案例及類別。PIT 的既有副本仍為密碼檢查器的歷史結果。
+- 四欄案例、各目標最少集合與分析：[1114 作業報告](docs/1114_homework_report.docx)；每個案例的執行與 JaCoCo 截圖位於 [docs/screenshots/1114](docs/screenshots/1114)。
+
+```sh
+mvn test
+mvn clean verify
+mvn org.pitest:pitest-maven:mutationCoverage
+```
+
+只執行新增案例：
+
+```sh
+mvn "-Dtest=CourseRegistrationLogicTest,CourseRegistrationDomainTest" test
+```
+
+本機目錄已對齊 `origin/main` 的 Maven 結構。重新開啟專案時選擇包含 `pom.xml` 的根目錄，使用 Maven 匯入與 JDK 21；舊 Gradle 任務不再適用。
+
+`reports/junit` 保存 Maven Surefire 的執行結果：三個測試類別合計 23 個案例，皆無失敗、錯誤或跳過；重新執行時以 `target` 下的新結果為準。
+
+
+### 測試命名與 Arrange–Act–Assert
+
+新增的 `CourseRegistrationLogicTest` 與 `CourseRegistrationDomainTest` 使用 `given條件_when受測方法_then預期結果` 命名，對應準備的情境、執行的操作與預期結果。這兩個類別的每個測試本文分成 `// Arrange`、`// Act`、`// Assert`；AAA 是本文結構，方法名稱則讓這三項資訊可直接閱讀。
+
+L1～L8、D1～D6 的作業案例編號仍保留在 Javadoc、輸出與報告中，4-1～5-2 的最少案例集合不變。PasswordValidatorTest 保留 `rejectsNull`、`rejectsTooShort` 等原有方法名稱，對應上方 T1～T9 表格與指令。

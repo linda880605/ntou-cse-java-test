@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourseRegistrationPolicy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Java Software Testing Coverage Demo</a> &gt; <a href="index.source.html" class="el_package">tw.edu.testing</a> &gt; <span class="el_source">CourseRegistrationPolicy.java</span></div><h1>CourseRegistrationPolicy.java</h1><pre class="source lang-java linenums">package tw.edu.testing;
+
+/**
+ * 1114 作業：課程報名與費用計算。
+ * &lt;ul&gt;
+ *   &lt;li&gt;4. Logical Expressions Coverage：{@link #canEnroll(boolean, boolean, String[])}。
+ *   &lt;li&gt;5. Input Domain Characterization：{@link #calculateFee(int, boolean)}。
+ * &lt;/ul&gt;
+ */
+<span class="fc" id="L10">public class CourseRegistrationPolicy {</span>
+
+    /** 報名本課程必須已修過的先修課程。 */
+    static final String PREREQUISITE = &quot;Programming&quot;;
+
+    /** 團報折扣：第 2 位起每人折抵的金額。 */
+    static final long GROUP_DISCOUNT = 20L;
+
+    /**
+     * 4. Logical Expressions Coverage：有名額或加簽許可，且完成先修課程，才可報名。
+     * &lt;p&gt;先以迴圈逐一檢查已修課程，判斷是否修過 {@link #PREREQUISITE}；再以 if 判斷報名述詞。
+     * &lt;p&gt;A = hasSeat，B = hasOverride，C = prerequisitesMet（由 completedCourses 決定）；P = (A OR B) AND C。
+     * 布林 {@code |}、{@code &amp;} 使三個子句每次都求值，不會被短路略過。
+     * &lt;ul&gt;
+     *   &lt;li&gt;4-1. Predicate Coverage：L1、L8，最少 2 個案例。
+     *   &lt;li&gt;4-2. Clause Coverage：L1、L8，最少 2 個案例。
+     *   &lt;li&gt;4-3. Combinatorial Coverage：L1～L8，最少 8 個案例。
+     * &lt;/ul&gt;
+     *
+     * @param hasSeat 是否有名額（子句 A）
+     * @param hasOverride 是否有加簽許可（子句 B）
+     * @param completedCourses 已修畢的課程名稱；含 {@link #PREREQUISITE} 時子句 C 為 true
+     * @return 可報名時為 true，否則為 false
+     */
+    public boolean canEnroll(boolean hasSeat, boolean hasOverride, String[] completedCourses) {
+<span class="fc" id="L35">        boolean prerequisitesMet = false;</span>
+<span class="fc" id="L36">        int index = 0;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        while (index &lt; completedCourses.length) {</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            if (PREREQUISITE.equals(completedCourses[index])) {</span>
+<span class="fc" id="L39">                prerequisitesMet = true;</span>
+<span class="fc" id="L40">                break;</span>
+            }
+<span class="fc" id="L42">            index++;</span>
+        }
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if ((hasSeat | hasOverride) &amp; prerequisitesMet) {</span>
+<span class="fc" id="L45">            return true;</span>
+        }
+<span class="fc" id="L47">        return false;</span>
+    }
+
+    /**
+     * 5. Input Domain Characterization：標準課程每人 100，進階課程每人 200；
+     * 團報時第 2 位起每人折抵 {@link #GROUP_DISCOUNT}。
+     * &lt;p&gt;人數類別：無可計費人數（{@code &lt;= 0}）、單人（{@code = 1}，無折扣）、多人（{@code &gt; 1}，有折扣）。
+     * 課程類別：標準（false）、進階（true）。非正人數收費為 0；以 long 累加避免溢位。
+     * &lt;ul&gt;
+     *   &lt;li&gt;5-1. Categorization：D1、D4、D5，最少 3 個案例。
+     *   &lt;li&gt;5-2. Combinatorial：D1～D6，最少 6 個案例。
+     * &lt;/ul&gt;
+     *
+     * @param studentCount 報名人數，非正值視為無可計費人數
+     * @param advancedCourse 是否為進階課程
+     * @return 以 long 表示的總費用
+     */
+    public long calculateFee(int studentCount, boolean advancedCourse) {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (studentCount &lt;= 0) {</span>
+<span class="fc" id="L66">            return 0L;</span>
+        }
+        long unitFee;
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (advancedCourse) {</span>
+<span class="fc" id="L70">            unitFee = 200L;</span>
+        } else {
+<span class="fc" id="L72">            unitFee = 100L;</span>
+        }
+<span class="fc" id="L74">        long total = 0L;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (int student = 1; student &lt;= studentCount; student++) {</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            if (student &gt;= 2) {</span>
+<span class="fc" id="L77">                total += unitFee - GROUP_DISCOUNT;</span>
+            } else {
+<span class="fc" id="L79">                total += unitFee;</span>
+            }
+        }
+<span class="fc" id="L82">        return total;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
